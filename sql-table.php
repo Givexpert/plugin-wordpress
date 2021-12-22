@@ -35,11 +35,6 @@ function create_client_data_table() {
 	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 	dbDelta( $sql );
 	dbDelta($sql2);
-	 
-	// $wpdb->insert($progressbar_table_name, array('idFormulaire' => 0, 'objectifDeCollecte' => 0, 'montantDepart' => 0));
-	
-	// just for test   to remove befor prod
-	// $wpdb->insert($table_name, array('domaine' => 'https://2021-1.givexpert.org/', 'identifiant' => 'wanoon', 'password' => '6e1aa1b2b2afa7b8'));
 
 	add_option( 'jal_db_version', $jal_db_version );
 }
