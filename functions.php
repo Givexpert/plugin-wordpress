@@ -66,12 +66,32 @@ function get_progressbar_datas()
 
         $url = $baseURL . "api/templates/" . "?user=" . $client_data->identifiant . "&key=" . $client_data->password;
 
-        $body_response    = CallAPI('GET', $url);
-        $templates =  $body_response->templates;
+        $output = file_get_contents($url);
+        
+        $output_json = json_decode($output, true);
+
+        $template_array = [];
+        for ($i=0; $i < count($output_json['templates']) ; $i++) { 
+            $template = $output_json['templates'][$i];
+            $template_object = new stdClass();
+            $template_object->id = $template['id'];
+            $template_object->name = $template['name'];
+            $template_object->url = $template['url'];
+            $template_object->collected = $template['collected'];
+            $template_object->number_donors = $template['number_donors'];
+            $template_object->type = $template['type'];
+            $template_object->display = $template['display'];
+            $template_object->lang = $template['lang'];
+            $template_object->code = $template['code'];
+            $template_object->organisation_id = $template['organisation_id'];
+
+            $template_array[] = $template_object;
+        }
+
         $i=0;
         foreach ($saved_progress_data as $key_data => $database_value_block) {
  
-            foreach ($templates as $key => $template) {
+            foreach ($template_array as $key => $template) {
 
                 $collected  = (int)$template->collected;
                 $objectif  = $database_value_block->objectifDeCollecte;
@@ -86,7 +106,7 @@ function get_progressbar_datas()
                         $array_data[$i]['collected']= (int)$collected;
                         $array_data[$i]['objectif']= (int)$objectif;
                         $array_data[$i]['codeBlock']= (int)$database_value_block->codeBlock;
-                    }else{
+                    } else {
                       
                         $array_data[$i]['percentage']= (int)$percentage;
                         $array_data[$i]['collected']= (int)$collected;
@@ -133,8 +153,6 @@ function CallAPI($method, $url, $data = false)
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 
     $result = curl_exec($curl);
-
-    var_dump($result); die;
 
     curl_close($curl);
 

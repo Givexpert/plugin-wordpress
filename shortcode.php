@@ -10,27 +10,21 @@
 
 function capitaine_shortcode_first_name($atts)
 {
-    // wp_enqueue_style('text-style', plugins_url('css/styles.css', __FILE__)); 
-
     global $wpdb;
 
     $uniqueCode =  uniqid().'-'.rand();
-    
     $codeBlock          =  isset($atts['codedublock']) ? $atts['codedublock'] : $uniqueCode;
-
     $objectiveCollection   =  isset($atts['objectifdecollecte']) ? $atts['objectifdecollecte'] : 0;
     $startingAmount        =  isset($atts['montantdedepart']) ? $atts['montantdedepart'] : 0;
     $idFormulaire          =  isset($atts['idformulaire']) ? $atts['idformulaire'] : 1;
     $ArrierePlanBouton          =  isset($atts['arriereplanbouton']) ? $atts['arriereplanbouton'] : "inherit";
     $textColor          =  isset($atts['couleurdutexte']) ? $atts['couleurdutexte'] : "inherit";
-
     $showMeter          =  isset($atts['affichercompteur']) ? filter_var($atts['affichercompteur'], FILTER_VALIDATE_BOOLEAN) : false;
     $showButton          =  isset($atts['afficherbouton']) ? filter_var($atts['afficherbouton'], FILTER_VALIDATE_BOOLEAN) : false;
     $showProgress          =  isset($atts['aficherbardeprogression']) ? filter_var($atts['aficherbardeprogression'], FILTER_VALIDATE_BOOLEAN) : false;
 
     $table_name = $wpdb->prefix . "client_data";
     $client_data = $wpdb->get_results("SELECT * FROM `$table_name` ");
-
 
     $client_data =  $client_data[0];
     if ($client_data->domaine && $client_data->identifiant && $client_data->password) {
@@ -39,7 +33,7 @@ function capitaine_shortcode_first_name($atts)
 
         $url = $baseURL . "api/templates/" . "?user=" . $client_data->identifiant . "&key=" . $client_data->password . "&id=" . $idFormulaire;
 
-        $template    = getTemplateById('GET', $url);
+        $template    = getTemplateById($url);
 
         $collected  = $template->collected;
         $percentage  =   0;
@@ -48,8 +42,6 @@ function capitaine_shortcode_first_name($atts)
 
         $percentage = (int)$percentage;
 
-        //insertion en  base
-
         $data = [
             'idFormulaire' => $idFormulaire,
             'objectifDeCollecte' =>  $objectiveCollection,
@@ -57,8 +49,6 @@ function capitaine_shortcode_first_name($atts)
             "codeBlock" =>$codeBlock 
         ];
 
-        // $where = ['id' => 1];
-        // $wpdb->update($wpdb->prefix . 'progressbar_data', $data, $where);
         $wpdb->insert($wpdb->prefix . 'progressbar_data', $data);
 
         $formBegin  =  "
@@ -73,36 +63,33 @@ function capitaine_shortcode_first_name($atts)
 
         $formContent = "";
 
-        //meter is on  
         if ($showMeter) {
             $formContent  .= "
                 <div class=''>
-                    <h4>$collected € collectés</h4>
+                    <span style='font-size: 18px'>$collected € collectés</span>
                 </div>
            ";
         }
 
-        //meter is on  
         if ($showProgress) {
             $formContent  .= "
             <div class='progress ' style='height: 30px;background-color :$textColor'>
-            <div class='progress-bar' role='progressbar' style='font-size: 25px;width: $percentage%;background-color :$ArrierePlanBouton' aria-valuenow='$percentage' aria-valuemin='0' aria-valuemax='100'>$percentage%</div>
+            <div class='progress-bar' role='progressbar' style='font-size: 20px;width: $percentage%;background-color :$ArrierePlanBouton' aria-valuenow='$percentage' aria-valuemin='0' aria-valuemax='100'>$percentage%</div>
                 </div>
                 <div class=''>
-                    <span>sur  $objectiveCollection € d'objectifs</span>
+                    <span style='font-size: 18px'>sur  $objectiveCollection € d'objectifs</span>
                 </div>
             </div>
            ";
         }
-        //button is on  
+
         if ($showButton) {
             $formContent  .= "
-            <div class='col-md-12'>
-                <button type=' button' 
-                    class=' btn-lg p-4 redirectButton' 
+            <div class='col-md-12' style='margin-top: 10px;'>
+                <button type='button' 
+                    class=' btn-lg redirectButton' 
                     datatext='#' 
-                    style='background-color:$ArrierePlanBouton;color:$textColor;font-family:inherit'>
-
+                    style='background-color:$ArrierePlanBouton;color:$textColor;font-family:inherit;font-size:16px'>
                     Faire un don
                 </button>
             </div>
@@ -116,22 +103,21 @@ function capitaine_shortcode_first_name($atts)
                     <div class='row'> 
                         <div class='col-md-12'>
                             <div class=''>
-                                <h1>$collected € collectés</h1>
+                                <span style='font-size: 16px'>$collected € collectés</span>
                             </div>
                             <div class='progress ' style='height: 30px;background-color :$textColor'>
                                 <div class='progress-bar' role='progressbar' style='font-size: 25px;width: $percentage%;background-color :$ArrierePlanBouton' aria-valuenow='$percentage' aria-valuemin='0' aria-valuemax='100'>$percentage%</div>
                             </div>
                             <div class=''>
-                                <span>sur  $objectiveCollection € d'objectifs</span>
+                                <span style='font-size: 16px'>sur  $objectiveCollection € d'objectifs</span>
                             </div>
                         </div>
                        
                         <div class='col-md-12'>
-                        <button type=' button' 
-                            class=' btn-lg p-4 redirectButton' 
+                        <button type='button' 
+                            class=' btn-lg redirectButton' 
                             datatext='#' 
-                            style='background-color:$ArrierePlanBouton;color:$textColor;font-family:inherit'>
-
+                            style='background-color:$ArrierePlanBouton;color:$textColor;font-family:inherit;font-size:16px'>
                             Faire un don
                         </button>
    
@@ -139,15 +125,14 @@ function capitaine_shortcode_first_name($atts)
                     </div> 
                 </div>
         ";
-        // return  $formulaire;
     } else {
         $formulaire   = "
     
-            <div class='container-fluid' style='font-size : 30px'>
+            <div class='container-fluid' style='font-size : 25px'>
                 <div class='row'> 
                     <div class='col-md-12'>
                         <div class=''>
-                            <h1>Vueillez configurer votre compte</h1>
+                            <h1>Veuillez configurer votre compte</h1>
                         </div>
                         
                     </div>
@@ -160,39 +145,31 @@ function capitaine_shortcode_first_name($atts)
 
 add_shortcode('givexpert', 'capitaine_shortcode_first_name');
 
-function getTemplateById($method, $url, $data = false)
-{
-    // $url  ="https://jsonplaceholder.typicode.com/posts";
-    $curl = curl_init();
-    switch ($method) {
-        case "POST":
-            curl_setopt($curl, CURLOPT_POST, 1);
+function getTemplateById($url)
+{    
+    $output = file_get_contents($url);
+    
+    $output_json = json_decode($output, true);
 
-            if ($data)
-                curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-            break;
-        case "PUT":
-            curl_setopt($curl, CURLOPT_PUT, 1);
-            break;
-        default:
-            if ($data)
-                $url = sprintf("%s?%s", $url, http_build_query($data));
+    $template_array = [];
+    for ($i=0; $i < count($output_json['templates']) ; $i++) { 
+        $template = $output_json['templates'][$i];
+        $template_object = new stdClass();
+        $template_object->id = $template['id'];
+        $template_object->name = $template['name'];
+        $template_object->url = $template['url'];
+        $template_object->collected = $template['collected'];
+        $template_object->number_donors = $template['number_donors'];
+        $template_object->type = $template['type'];
+        $template_object->display = $template['display'];
+        $template_object->lang = $template['lang'];
+        $template_object->code = $template['code'];
+        $template_object->organisation_id = $template['organisation_id'];
+
+        $template_array[] = $template_object;
     }
 
-    // Optional Authentication:
-    curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-    curl_setopt($curl, CURLOPT_USERPWD, "username:password");
-
-    curl_setopt($curl, CURLOPT_URL, $url);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-
-    $result = curl_exec($curl);
-
-    curl_close($curl);
-    $decoded_data  =  json_decode($result);
-
-    $template  =   $decoded_data->templates;
-    $template =  $template[0];
+    $template =  $template_array[0];
 
     return $template;
 }

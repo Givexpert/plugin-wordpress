@@ -179,7 +179,7 @@ function shortcode_sub_menu_html()
 			</div><br><br>
 			<div class="col-md-12">
 				<p class="text-google"> <span> [givexpert <b>idformulaire</b>=1 <b>objectifdecollecte</b>=500
-						<b>montantdedepart</b>=0 <b>arriereplanbouton</b>=#eb4034 <b>couleurdutexte</b>=red <b>affichercompteur</b>=true <b>afficherbouton</b>=true <b>aficherbardeprogression</b>=true]</span></p>
+						<b>montantdedepart</b>=0 <b>arriereplanbouton</b>=#408080 <b>couleurdutexte</b>=#c0c0c0 <b>affichercompteur</b>=true <b>afficherbouton</b>=true <b>aficherbardeprogression</b>=true]</span></p>
 
 			</div>
 
