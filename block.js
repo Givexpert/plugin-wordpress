@@ -15,6 +15,7 @@ var currentRequest = null; //  deprecated not use anymore
 const families = [
     "Arial Black", "Corbel", "Courier", "Courier 10 Pitch", "Critter", "Curlz MT", "Cursor", "Gigi", "Gill Sans", "Gill Sans Bold", "Gill Sans Bold Italic", "GillSans", "GillSans-Bold", "Gisha", "Gisha Bold", "Helvetica", "Helvetica Bold", "Helvetica Bold Oblique", "Herculanum", "High Tower Text", "HiraMinProN-W3", "HiraMinProN-W6", "Impact", "Imprint MT Shadow", "sans-serif", "sans-serif-black", "sans-serif-condensed", "sans-serif-condensed-light", "sans-serif-light", "sans-serif-medium", "sans-serif-monospace", "sans-serif-smallcaps", "sans-serif-thin", "serif", "serif-monospace", "utkal"
 ]
+
 for (let i = 0; i < families.length; i++) {
     policeOption += ` <option style="font-family: ${families[i]}" value="${families[i]}"> ${families[i]}</option>`
 }
@@ -34,7 +35,6 @@ for (const [key, value] of Object.entries(typeRedirect)) {
     typeRedirectOption += ` <option  value="${key}"> ${value} </option>`
 }
 
-
 /**user's templates */
 if (userTemplates) {
     userTemplates.forEach(template => {
@@ -47,7 +47,6 @@ if (userTemplates) {
   
 /************************* PARAMS MANAGEMENT  ***************************************/
 
-
 wp.blocks.registerBlockType('give-xpert/donation-block', {
 
     title: 'GiveXpert', // Block name visible to user
@@ -58,35 +57,30 @@ wp.blocks.registerBlockType('give-xpert/donation-block', {
 
     attributes: { // The data this block will be storing
 
-        blockId: { type: 'string', default: "" }, // 
-        tempBlockId: { type: 'string', default: "" }, // 
+        blockId: { type: 'string', default: "" },
+        tempBlockId: { type: 'string', default: "" },
 
-        buttonText: { type: 'string', default: 'Faire un don' }, // 
-        buttonTypeRedirect: { type: 'string', default: '_blank' }, // 
-        buttonLink: { type: 'string', default: "#" }, // 
-        outSideButtonLink: { type: 'string', default: "#" }, // 
-        buttonColor: { type: 'string', default: "#787675" }, // 
-        buttonBgColor: { type: 'string', default: "#000000" }, // 
+        buttonText: { type: 'string', default: 'Faire un don' },
+        buttonTypeRedirect: { type: 'string', default: '_blank' },
+        buttonLink: { type: 'string', default: "#" },
+        outSideButtonLink: { type: 'string', default: "#" },
+        buttonColor: { type: 'string', default: "#787675" },
+        buttonBgColor: { type: 'string', default: "#000000" },
         buttonPolice: { type: 'string', default: "inherit", selector: 'button' },
 
-        //
         buttonElementIsCheck: { type: 'boolean', default: false },
         progressBarElementIsCheck: { type: 'boolean', default: false },
         meterElementIsCheck: { type: 'boolean', default: false },
-
 
         choiceProgressBar: { type: 'string', default: "progressbar" },
         choiceMeter: { type: 'string', default: "meter" },
         choiceButton: { type: 'string', default: "button" },
 
-        //
         collectionObjective: { type: 'number', default: 0 },
         startingAmount: { type: 'float', default: 0 },
         collectionPercentage: { type: 'string', default: '0' },
         collectedAmount: { type: 'float', default: 0 },
         defaultCollectedAmount: { type: 'float', default: 0 },
-
-
     },
 
     edit: (props) => {
@@ -95,9 +89,7 @@ wp.blocks.registerBlockType('give-xpert/donation-block', {
         const progressBarElementShow = props.attributes.progressBarElementIsCheck ? "" : "hide-me";
         const meterBarElementShow = props.attributes.meterElementIsCheck ? "" : "hide-me";
 
-        //  ajax to update progress bar value  
         function updateProgressBarValue(params) {
-
             jQuery.ajax({
                 type: 'POST',
                 dataType: 'html',
@@ -122,8 +114,8 @@ wp.blocks.registerBlockType('give-xpert/donation-block', {
         function updateButtonText(event) {
             props.setAttributes({ buttonText: event.target.value });
         }
+        
         function updateButtonLink(event) {
-
             updateProgressBarValue({
                 'idFormulaire': parseInt(event.target.value),
                 'codeBlock': props.attributes.blockId,
@@ -133,7 +125,6 @@ wp.blocks.registerBlockType('give-xpert/donation-block', {
             //get current template 
             var currentTemplate = userTemplates[parseInt(event.target.value) - 1];
             var beginStartingAmount = parseFloat(currentTemplate.collected) + parseFloat(props.attributes.startingAmount);
-
 
             if (props.attributes.collectionObjective > 0) {
                 var percentage = ((parseFloat(currentTemplate.collected) + parseFloat(props.attributes.startingAmount)) * 100) / props.attributes.collectionObjective;
@@ -146,8 +137,8 @@ wp.blocks.registerBlockType('give-xpert/donation-block', {
             props.setAttributes({ collectionPercentage: parseInt(percentage) });
             props.setAttributes({ collectedAmount: parseInt(beginStartingAmount) });
             props.setAttributes({ defaultCollectedAmount: parseInt(currentTemplate.collected) });
-
         }
+        
         function updateTempCodeBlock(event) {
             props.setAttributes({ tempBlockId: event.target.value });
         }
@@ -157,14 +148,12 @@ wp.blocks.registerBlockType('give-xpert/donation-block', {
         }
 
         function updateCodeBlock(event) {
-
             var oldBlockId = props.attributes.blockId;
             updateProgressBarValue({
                 'codeBlock': props.attributes.tempBlockId,
                 'oldCode': oldBlockId,
                 "action": "ajax_progress_bar_save_code"
             })
-
         }
 
         function updateButtonBgColor(value) {
@@ -174,8 +163,8 @@ wp.blocks.registerBlockType('give-xpert/donation-block', {
         function updateButtonTexteColor(value) {
             props.setAttributes({ buttonColor: value.target.value });
         }
+        
         function updateButtonPolice(event) {
-
             props.setAttributes({ buttonPolice: event.target.value });
         }
         
@@ -193,8 +182,6 @@ wp.blocks.registerBlockType('give-xpert/donation-block', {
         }
         
         function treatMeterVisibility(MeterCheck,progressBarCheck) {
-
-             
             if (MeterCheck) {
                 document.querySelectorAll(`.plugin-meter-${props.attributes.blockId}`).forEach(function (el) {
                     el.classList.remove('hide-me');
@@ -209,7 +196,6 @@ wp.blocks.registerBlockType('give-xpert/donation-block', {
         }
 
         function treatProgresbarVisibility(ProgressbarCheck,meterCheck) {
-          
             if (ProgressbarCheck) {
                 document.querySelectorAll(`.plugin-progressbar-${props.attributes.blockId}`).forEach(function (el) {
                     el.classList.remove('hide-me');
@@ -232,27 +218,21 @@ wp.blocks.registerBlockType('give-xpert/donation-block', {
             }
         }
 
-
-
         function changeChoiceView(event) {
-
             var inputValue = event.target.value;
 
             if (inputValue == "button") {
-
                 var isCheck = !props.attributes.buttonElementIsCheck;
                 props.setAttributes({ buttonElementIsCheck: isCheck });
-                treatButtonVisibility(isCheck)          
-
+                treatButtonVisibility(isCheck)      
+                
             } else if (inputValue == "meter") {
                 var isCheck = !props.attributes.meterElementIsCheck;
                 var progressIsCheck = !props.attributes.progressBarElementIsCheck;
                 props.setAttributes({ meterElementIsCheck: isCheck });
-                treatMeterVisibility(isCheck,progressIsCheck)
-
-
+                treatMeterVisibility(isCheck, progressIsCheck)
+                
             } else if (inputValue == "progressbar") {
-
                 var isCheck = !props.attributes.progressBarElementIsCheck;
                 var meterIsCheck = props.attributes.meterElementIsCheck;
                 props.setAttributes({ progressBarElementIsCheck: isCheck });
@@ -261,7 +241,6 @@ wp.blocks.registerBlockType('give-xpert/donation-block', {
         }
 
         function changeTypeView(event) {
-
             var type = event.target.value;
             if (type == `preview-${props.attributes.blockId}`) {
                 document.getElementById(`edit-content-${props.attributes.blockId}`).className += ' hide-me';
@@ -272,9 +251,8 @@ wp.blocks.registerBlockType('give-xpert/donation-block', {
                 document.getElementById(`edit-content-${props.attributes.blockId}`).classList.remove('hide-me');
             }
         }
-        //
-        function updateCollectionObjective(event) {
 
+        function updateCollectionObjective(event) {
             updateProgressBarValue({
                 'objectifDeCollecte': parseInt(event.target.value),
                 'codeBlock': props.attributes.blockId,
@@ -288,18 +266,15 @@ wp.blocks.registerBlockType('give-xpert/donation-block', {
             }
 
             props.setAttributes({ collectionPercentage: percentage.toString() });
-
             props.setAttributes({ collectionObjective: parseInt(event.target.value) });
         }
 
         function updateStartingAmount(event) {
-
             updateProgressBarValue({
                 'montantDepart': parseInt(event.target.value),
                 'codeBlock': props.attributes.blockId,
                 "action": "ajax_save_progress_bar_data"
             })
-
 
             if (props.attributes.collectionObjective > 0) {
                 var percentage = ((parseFloat(props.attributes.collectedAmount) + parseFloat(event.target.value)) * 100) / props.attributes.collectionObjective;
@@ -312,8 +287,7 @@ wp.blocks.registerBlockType('give-xpert/donation-block', {
             props.setAttributes({ startingAmount: event.target.value });
             props.setAttributes({ collectedAmount: beginStartingAmount });
         }
-
-        
+     
         function visibilityOnLoadButtonElements() { 
             treatButtonVisibility(props.attributes.buttonElementIsCheck)        
         }
@@ -326,39 +300,31 @@ wp.blocks.registerBlockType('give-xpert/donation-block', {
             treatProgresbarVisibility(props.attributes.progressBarElementIsCheck,props.attributes.meterElementIsCheck)        
         }
 
-        return el('div',
-            {
+        return el('div', {
                 className: 'container-fluid p-3',
                 style: { backgroundColor: '#fff', borderColor: "cbcbcb" }
-
             },
 
-            el('div',
-                {
+            el('div', {
                     className: `container edit-content-${props.attributes.blockId} `,
                     id: `edit-content-${props.attributes.blockId}`
                 },
                 el(
-                    'div',
-                    {
+                    'div', {
                         className: 'row'
                     },
                     el(
-                        'div',
-                        {
+                        'div', {
                             className: 'col-md-12 text-center p-2'
                         },
                         el(
-                            'img',
-                            {
+                            'img', {
                                 src: logoLink,
                                 style: { width: '50%', marginBottom: "25px", backgroundColor: '#F1F5F9' },
                             },
                         ),
                     )
                 ),
-
-                // choice
 
                 el(
                     'div',

@@ -8,11 +8,9 @@
  * Author URI: http://yourwebsiteurl.com/
  **/
 
-
 function capitaine_shortcode_first_name($atts)
 {
     // wp_enqueue_style('text-style', plugins_url('css/styles.css', __FILE__)); 
-
 
     global $wpdb;
 
@@ -59,11 +57,9 @@ function capitaine_shortcode_first_name($atts)
             "codeBlock" =>$codeBlock 
         ];
 
-
         // $where = ['id' => 1];
         // $wpdb->update($wpdb->prefix . 'progressbar_data', $data, $where);
         $wpdb->insert($wpdb->prefix . 'progressbar_data', $data);
-       
 
         $formBegin  =  "
                 <div class='container-fluid' style='font-size : 25px'>
@@ -75,10 +71,7 @@ function capitaine_shortcode_first_name($atts)
                     </div> 
                 </div>";
 
-
         $formContent = "";
-
-
 
         //meter is on  
         if ($showMeter) {
@@ -88,7 +81,6 @@ function capitaine_shortcode_first_name($atts)
                 </div>
            ";
         }
-
 
         //meter is on  
         if ($showProgress) {
@@ -119,11 +111,7 @@ function capitaine_shortcode_first_name($atts)
 
         return  $formBegin . $formContent . $formEnd;
 
-
-
-
         $formulaire   = "
-        
                 <div class='container-fluid' style='font-size : 25px'>
                     <div class='row'> 
                         <div class='col-md-12'>
@@ -153,7 +141,6 @@ function capitaine_shortcode_first_name($atts)
         ";
         // return  $formulaire;
     } else {
-
         $formulaire   = "
     
             <div class='container-fluid' style='font-size : 30px'>
@@ -170,9 +157,8 @@ function capitaine_shortcode_first_name($atts)
         return  $formulaire;
     }
 }
-add_shortcode('givexpert', 'capitaine_shortcode_first_name');
 
-// [prenom]
+add_shortcode('givexpert', 'capitaine_shortcode_first_name');
 
 function getTemplateById($method, $url, $data = false)
 {
@@ -205,10 +191,8 @@ function getTemplateById($method, $url, $data = false)
     curl_close($curl);
     $decoded_data  =  json_decode($result);
 
-
     $template  =   $decoded_data->templates;
     $template =  $template[0];
-
 
     return $template;
 }
