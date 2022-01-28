@@ -31,7 +31,7 @@ function capitaine_shortcode_first_name($atts)
 
         $baseURL =  formatBaseApiUrl($client_data->domaine);
 
-        $url = $baseURL . "api/templates/" . "?user=" . $client_data->identifiant . "&key=" . $client_data->password . "&id=" . $idFormulaire;
+        $url = $client_data->domaine. "?user=" . $client_data->identifiant . "&key=" . $client_data->password . "&id=" . $idFormulaire;
 
         $template    = getTemplateById($url);
 

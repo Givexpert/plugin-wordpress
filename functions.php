@@ -11,7 +11,7 @@ function get_user_template_datas()
 
         $baseURL =  formatBaseApiUrl($client_data->domaine);
 
-        $url = $baseURL . "api/templates" . "?user=" . $client_data->identifiant . "&key=" . $client_data->password;
+        $url = $client_data->domaine. "?user=" . $client_data->identifiant . "&key=" . $client_data->password;
 
         $output = file_get_contents($url);
         
@@ -64,29 +64,36 @@ function get_progressbar_datas()
        
         $baseURL =  formatBaseApiUrl($client_data->domaine);
 
-        $url = $baseURL . "api/templates/" . "?user=" . $client_data->identifiant . "&key=" . $client_data->password;
+        $url = $client_data->domaine. "?user=" . $client_data->identifiant . "&key=" . $client_data->password;
 
-        $output = file_get_contents($url);
+        try {
+            $output = file_get_contents($url);
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
         
         $output_json = json_decode($output, true);
-
         $template_array = [];
-        for ($i=0; $i < count($output_json['templates']) ; $i++) { 
-            $template = $output_json['templates'][$i];
-            $template_object = new stdClass();
-            $template_object->id = $template['id'];
-            $template_object->name = $template['name'];
-            $template_object->url = $template['url'];
-            $template_object->collected = $template['collected'];
-            $template_object->number_donors = $template['number_donors'];
-            $template_object->type = $template['type'];
-            $template_object->display = $template['display'];
-            $template_object->lang = $template['lang'];
-            $template_object->code = $template['code'];
-            $template_object->organisation_id = $template['organisation_id'];
 
-            $template_array[] = $template_object;
+        if(isset($output_json)) {
+            for ($i=0; $i < count($output_json['templates']) ; $i++) { 
+                $template = $output_json['templates'][$i];
+                $template_object = new stdClass();
+                $template_object->id = $template['id'];
+                $template_object->name = $template['name'];
+                $template_object->url = $template['url'];
+                $template_object->collected = $template['collected'];
+                $template_object->number_donors = $template['number_donors'];
+                $template_object->type = $template['type'];
+                $template_object->display = $template['display'];
+                $template_object->lang = $template['lang'];
+                $template_object->code = $template['code'];
+                $template_object->organisation_id = $template['organisation_id'];
+
+                $template_array[] = $template_object;
+            }
         }
+
 
         $i=0;
         foreach ($saved_progress_data as $key_data => $database_value_block) {
@@ -95,13 +102,14 @@ function get_progressbar_datas()
 
                 $collected  = (int)$template->collected;
                 $objectif  = $database_value_block->objectifDeCollecte;
+                $percentage = 0;
 
                 if ($template->id  ==  $database_value_block->idFormulaire) {
                   
                     if( $database_value_block->objectifDeCollecte !== 0){
                         
                         //calcul du pourcentage d'achevement 
-                        $percentage  =  ((int)$collected  + $database_value_block->montantDepart) * 100 /  $database_value_block->objectifDeCollecte;
+                        $percentage  = ($database_value_block->objectifDeCollecte > 0) ? ($collected  + $database_value_block->montantDepart) * 100 /  $database_value_block->objectifDeCollecte : 0;
                         $array_data[$i]['percentage']= (int)$percentage;
                         $array_data[$i]['collected']= (int)$collected;
                         $array_data[$i]['objectif']= (int)$objectif;

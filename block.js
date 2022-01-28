@@ -78,7 +78,7 @@ wp.blocks.registerBlockType('give-xpert/donation-block', {
 
         collectionObjective: { type: 'number', default: 0 },
         startingAmount: { type: 'float', default: 0 },
-        collectionPercentage: { type: 'string', default: '0' },
+        collectionPercentage: { type: 'number', default: '0' },
         collectedAmount: { type: 'float', default: 0 },
         defaultCollectedAmount: { type: 'float', default: 0 },
     },
@@ -265,7 +265,7 @@ wp.blocks.registerBlockType('give-xpert/donation-block', {
                 var percentage = "0";
             }
 
-            props.setAttributes({ collectionPercentage: percentage.toString() });
+            props.setAttributes({ collectionPercentage: parseInt(percentage) });
             props.setAttributes({ collectionObjective: parseInt(event.target.value) });
         }
 
@@ -859,10 +859,11 @@ wp.blocks.registerBlockType('give-xpert/donation-block', {
                             {
                                 className: meterBarElementShow,
                             },
-                            el('h4',
+                            el('span',
                                 {
                                     style: {
-                                        fontFamily: props.attributes.buttonPolice
+                                        fontFamily: props.attributes.buttonPolice,
+                                        fontSize: '18px'
                                     }
                                 },
                                 props.attributes.collectedAmount + " € collectés"
@@ -878,33 +879,34 @@ wp.blocks.registerBlockType('give-xpert/donation-block', {
                             el(
                                 'div',
                                 {
-                                    className: 'progress-bar p-0',
+                                    className: 'progress-bar',
                                     role: "progressbar",
                                     ariaValuenow: parseInt(props.attributes.collectionObjective),
                                     ariaValuemin: "0",
                                     ariaValuemax: "100",
                                     style: {
-                                        maxWidth: props.attributes.collectionPercentage + "%",
+                                        maxWidth: parseInt(props.attributes.collectionPercentage) + "%",
                                         backgroundColor: props.attributes.buttonBgColor,
                                         color: props.attributes.buttonColor,
                                     }
                                 },
                                 el('span',
                                     {
-                                        style: { fontSize: '20px' }
-                                    }, props.attributes.collectionPercentage + "%"
+                                        style: { fontSize: '18px' }
+                                    }, parseInt(props.attributes.collectionPercentage) + "%"
                                 )
                             ),
                         ),
                         el(
                             'div',
                             {
-                                className: progressBarElementShow + ' p-2  ',
+                                className: progressBarElementShow,
                             },
                             el('span',
                                 {
                                     style: {
-                                        fontFamily: props.attributes.buttonPolice
+                                        fontFamily: props.attributes.buttonPolice,
+                                        fontSize: '18px'
                                     }
                                 },
                                 "sur " + props.attributes.collectionObjective + " € d'objectifs"
@@ -983,12 +985,13 @@ wp.blocks.registerBlockType('give-xpert/donation-block', {
                     {
                         className: meterBarElementShow,
                     },
-                    el('h4',
+                    el('span',
                         {
 
                             id: "progress-bar-collected-text-" + props.attributes.blockId,
                             style: {
-                                fontFamily: props.attributes.buttonPolice
+                                fontFamily: props.attributes.buttonPolice,
+                                fontSize: '20px'
                             }
                         },
                         props.attributes.collectedAmount + " € collectés"
@@ -1011,7 +1014,7 @@ wp.blocks.registerBlockType('give-xpert/donation-block', {
                             ariaValuemin: "0",
                             ariaValuemax: "100",
                             style: {
-                                maxWidth: props.attributes.collectionPercentage + "%",
+                                maxWidth: parseInt(props.attributes.collectionPercentage) + "%",
                                 backgroundColor: props.attributes.buttonBgColor,
                                 color: props.attributesbuttonColor,
                             }
@@ -1019,15 +1022,15 @@ wp.blocks.registerBlockType('give-xpert/donation-block', {
                         el('span',
                             {
                                 id: "custom-progress-span-" + props.attributes.blockId,
-                                style: { fontSize: '20px' }
-                            }, props.attributes.collectionPercentage + "%"
+                                style: { fontSize: '16px' }
+                            }, parseInt(props.attributes.collectionPercentage) + "%"
                         )
                     ),
                 ),
                 el(
                     'div',
                     {
-                        className: progressBarElementShow + ' p-2  ',
+                        className: progressBarElementShow,
                     },
                     el('span',
                         {
@@ -1054,7 +1057,8 @@ wp.blocks.registerBlockType('give-xpert/donation-block', {
                         style: {
                             backgroundColor: props.attributes.buttonBgColor,
                             color: props.attributes.buttonColor,
-                            fontFamily: props.attributes.buttonPolice
+                            fontFamily: props.attributes.buttonPolice,
+                            fontSize: '18px'
                         }
                     },
                     props.attributes.buttonText,
