@@ -1,25 +1,81 @@
 <?php
 
-function get_user_template_datas()
-{
+function check_url($url) {
+    $last_char = substr($url, -1); 
+
+    if($last_char == '/'){
+        return $url;
+    } else {
+        return $url.'/';
+    }
+}
+
+function get_api_data() {
+    $api_content_file = __DIR__ . '/api_content.txt';
+    $api_content_date_file = __DIR__ . '/api_content_date.txt';
+    $current_date = date('Y-m-d H:i:s');
+
     global $wpdb;
     $table_name = $wpdb->prefix . "client_data";
     $client_data = $wpdb->get_results("SELECT * FROM `$table_name` ");
 
     $client_data =  $client_data[0];
     if ($client_data->domaine && $client_data->identifiant && $client_data->password) {
+        $url = check_url($client_data->domaine) . "?user=" . $client_data->identifiant . "&key=" . $client_data->password . "&display=Y";
 
-        $baseURL =  formatBaseApiUrl($client_data->domaine);
+        if(isset($api_content_file) && filesize($api_content_file) == 0) {
+            $args = array(
+                'Content-Type' => 'application/json'
+            );
+            $get_data = wp_remote_get($url, $args);
+            $api_content_data = $get_data['body'];
 
-        $url = $client_data->domaine. "?user=" . $client_data->identifiant . "&key=" . $client_data->password;
+            $fp = fopen($api_content_file, 'w'); 
+            fwrite($fp, $api_content_data);
+            fclose($fp);
 
-        $output = file_get_contents($url);
-        
-        $output_json = json_decode($output, true);
+            $fp = fopen($api_content_date_file, 'w'); 
+            fwrite($fp, $current_date);
+            fclose($fp);
+        } else {
+            if(filesize($api_content_date_file) > 0) {
+                $api_content_date = file_get_contents($api_content_date_file);
+                $current_date_times = strtotime($current_date);
+                $api_content_date_times = strtotime($api_content_date);
 
+                $nb_minutes_elapsed = round(abs($current_date_times - $api_content_date_times) / 60);
+
+                if($nb_minutes_elapsed > 5) {
+                    $args = array(
+                        'Content-Type' => 'application/json'
+                    );
+                    $get_data = wp_remote_get($url, $args);
+                    $api_content_data = $get_data['body'];
+
+                    $fp = fopen($api_content_file, 'w'); 
+                    fwrite($fp, $api_content_data);
+                    fclose($fp);
+
+                    $fp = fopen($api_content_date_file, 'w'); 
+                    fwrite($fp, $current_date);
+                    fclose($fp);
+                } else {
+                    $api_content_data = file_get_contents($api_content_file);
+                }
+            } else {
+                $api_content_data = file_get_contents($api_content_file);
+            }
+        }
+
+        $data_json = (isset($api_content_data)) ? json_decode($api_content_data, true) : [];
+            
         $template_array = [];
-        for ($i=0; $i < count($output_json['templates']) ; $i++) { 
-            $template = $output_json['templates'][$i];
+        if(!isset($data_json['templates'])) {
+            return [];
+        }
+
+        for ($i=0; $i < count($data_json['templates']) ; $i++) { 
+            $template = $data_json['templates'][$i];
             $template_object = new stdClass();
             $template_object->id = $template['id'];
             $template_object->name = $template['name'];
@@ -37,11 +93,10 @@ function get_user_template_datas()
 
         return $template_array;
     }
+}
 
-    $body_response  =  new stdClass;
-    $body_response->url = '#';
-    $body_response->name = 'Veuillez configurer votre compte';
-    return [$body_response];
+function get_user_template_datas() {
+    return get_api_data();
 }
 
 function get_progressbar_datas()
@@ -60,11 +115,69 @@ function get_progressbar_datas()
     $percentage =  0;
     $collected  =  0;
     $objectif  =  0;
-    if ($client_data->domaine && $client_data->identifiant && $client_data->password) {
-       
-        $baseURL =  formatBaseApiUrl($client_data->domaine);
 
-        $url = $client_data->domaine. "?user=" . $client_data->identifiant . "&key=" . $client_data->password;
+    $template_array = get_api_data();
+
+    if(count($template_array) > 0) {
+        $i=0;
+        foreach ($saved_progress_data as $key_data => $database_value_block) {
+ 
+            foreach ($template_array as $key => $template) {
+
+                $collected  = (int)$template->collected;
+                $objectif  = $database_value_block->objectifDeCollecte;
+                $percentage = 0;
+
+                if ($template->id  ==  $database_value_block->idFormulaire) {
+                  
+                    if( $database_value_block->objectifDeCollecte !== 0){
+                        
+                        //calcul du pourcentage d'achevement 
+                        $percentage  = ($database_value_block->objectifDeCollecte > 0) ? ($collected  + $database_value_block->montantDepart) * 100 /  $database_value_block->objectifDeCollecte : 0;
+                        $array_data[$i]['percentage']= (int)$percentage;
+                        $array_data[$i]['collected']= (int)$collected;
+                        $array_data[$i]['objectif']= (int)$objectif;
+                        $array_data[$i]['codeBlock']= (int)$database_value_block->codeBlock;
+                    } else {
+                      
+                        $array_data[$i]['percentage']= (int)$percentage;
+                        $array_data[$i]['collected']= (int)$collected;
+                        $array_data[$i]['objectif']= (int)$objectif;
+                        $array_data[$i]['codeBlock']= (int)$database_value_block->codeBlock;
+                    }
+                    $i++;
+                }
+            }
+        } 
+
+        return $array_data;
+    }
+
+    $body_response  =  new stdClass;
+    $body_response->url = '#';
+    $body_response->name = 'Veuillez configurer votre compte';
+    return [$body_response];
+}
+
+function get_progressbar_datas_olddd()
+{
+    global $wpdb;
+
+    $array_data= [];
+    $table_name = $wpdb->prefix . "client_data";
+    $progressbar_table_name = $wpdb->prefix . "progressbar_data";
+    $client_data = $wpdb->get_results("SELECT * FROM `$table_name` ");
+    $saved_progress_data = $wpdb->get_results("SELECT * FROM `$progressbar_table_name` ");
+
+    $client_data =  $client_data[0];
+    // $saved_progress_data =  $saved_progress_data[0];
+
+    $percentage =  0;
+    $collected  =  0;
+    $objectif  =  0;
+    if ($client_data->domaine && $client_data->identifiant && $client_data->password) {
+
+        $url = check_url($client_data->domaine). "?user=" . $client_data->identifiant . "&key=" . $client_data->password;
 
         try {
             $output = file_get_contents($url);
@@ -133,40 +246,6 @@ function get_progressbar_datas()
     $body_response->url = '#';
     $body_response->name = 'Veuillez configurer votre compte';
     return [$body_response];
-}
-
-function CallAPI($method, $url, $data = false)
-{
-    // $url  ="https://jsonplaceholder.typicode.com/posts";
-    $curl = curl_init();
-    switch ($method) {
-        case "POST":
-            curl_setopt($curl, CURLOPT_POST, 1);
-            if ($data)
-                curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-            break;
-        case "PUT":
-            curl_setopt($curl, CURLOPT_PUT, 1);
-            break;
-        default:
-            if ($data)
-                $url = sprintf("%s?%s", $url, http_build_query($data));
-    }
-
-    // Optional Authentication:
-    curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-    curl_setopt($curl, CURLOPT_USERPWD, "username:password");
-
-    curl_setopt($curl, CURLOPT_URL, $url);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-
-    $result = curl_exec($curl);
-
-    curl_close($curl);
-
-    $decoded_data  =  json_decode($result);
-
-    return $decoded_data;
 }
 
 function jal_install()

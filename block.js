@@ -97,7 +97,7 @@ wp.blocks.registerBlockType('give-xpert/donation-block', {
                 data: params, 
                 success: function (data) {
                     let response = JSON.parse(data);
-                    if (typeof response.data.codeBlock != 'undefined') {
+                    if ((response.data) && typeof response.data.codeBlock != 'undefined') {
                         props.setAttributes({ blockId: response.data.codeBlock });
                         props.setAttributes({ tempBlockId: response.data.codeBlock });
                     }
@@ -115,6 +115,16 @@ wp.blocks.registerBlockType('give-xpert/donation-block', {
             props.setAttributes({ buttonText: event.target.value });
         }
         
+        function getTemplateSelected(userTemplates, templateID) {
+            for (let index = 0; index < userTemplates.length; index++) {
+                const template = userTemplates[index];
+
+                if (parseInt(template['id']) === parseInt(templateID)) {
+                    return template;
+                }
+            }
+        }
+        
         function updateButtonLink(event) {
             updateProgressBarValue({
                 'idFormulaire': parseInt(event.target.value),
@@ -122,12 +132,11 @@ wp.blocks.registerBlockType('give-xpert/donation-block', {
                 "action": "ajax_save_progress_bar_data"
             })
 
-            //get current template 
-            var currentTemplate = userTemplates[parseInt(event.target.value) - 1];
-            var beginStartingAmount = parseFloat(currentTemplate.collected) + parseFloat(props.attributes.startingAmount);
+            var currentTemplate = getTemplateSelected(userTemplates, parseInt(event.target.value));
+            var beginStartingAmount = parseInt(currentTemplate.collected) + parseInt(props.attributes.startingAmount);
 
             if (props.attributes.collectionObjective > 0) {
-                var percentage = ((parseFloat(currentTemplate.collected) + parseFloat(props.attributes.startingAmount)) * 100) / props.attributes.collectionObjective;
+                var percentage = ((parseInt(currentTemplate.collected) + parseInt(props.attributes.startingAmount)) * 100) / props.attributes.collectionObjective;
             } else {
                 var percentage = "0%";
             }
@@ -260,7 +269,7 @@ wp.blocks.registerBlockType('give-xpert/donation-block', {
             })
 
             if (props.attributes.collectionObjective > 0) {
-                var percentage = ((parseFloat(props.attributes.collectedAmount) + parseFloat(props.attributes.startingAmount)) * 100) / event.target.value;
+                var percentage = ((parseInt(props.attributes.collectedAmount) + parseInt(props.attributes.startingAmount)) * 100) / event.target.value;
             } else {
                 var percentage = "0";
             }
@@ -277,12 +286,11 @@ wp.blocks.registerBlockType('give-xpert/donation-block', {
             })
 
             if (props.attributes.collectionObjective > 0) {
-                var percentage = ((parseFloat(props.attributes.collectedAmount) + parseFloat(event.target.value)) * 100) / props.attributes.collectionObjective;
+                var percentage = ((parseInt(props.attributes.collectedAmount) + parseInt(event.target.value)) * 100) / props.attributes.collectionObjective;
             } else {
                 var percentage = "0";
             }
             var beginStartingAmount = parseInt(props.attributes.defaultCollectedAmount) + parseInt(event.target.value);
-            // console.log(parseInt(props.attributes.collectedAmount), parseInt(event.target.value), beginStartingAmount);
             props.setAttributes({ collectionPercentage: parseInt(percentage) });
             props.setAttributes({ startingAmount: event.target.value });
             props.setAttributes({ collectedAmount: beginStartingAmount });
@@ -1022,7 +1030,7 @@ wp.blocks.registerBlockType('give-xpert/donation-block', {
                         el('span',
                             {
                                 id: "custom-progress-span-" + props.attributes.blockId,
-                                style: { fontSize: '16px' }
+                                style: { fontSize: '19px' }
                             }, parseInt(props.attributes.collectionPercentage) + "%"
                         )
                     ),

@@ -29,16 +29,22 @@ function capitaine_shortcode_first_name($atts)
     $client_data =  $client_data[0];
     if ($client_data->domaine && $client_data->identifiant && $client_data->password) {
 
-        $baseURL =  formatBaseApiUrl($client_data->domaine);
+        $last_char = substr($client_data->domaine, -1); 
+        $domaine = $client_data->domaine;
 
-        $url = $client_data->domaine. "?user=" . $client_data->identifiant . "&key=" . $client_data->password . "&id=" . $idFormulaire;
+        if($last_char == '/'){
+            $domaine = $client_data->domaine;
+        } else {
+            $domaine = $client_data->domaine.'/';
+        }
+        $url = $domaine. "?user=" . $client_data->identifiant . "&key=" . $client_data->password . "&id=" . $idFormulaire . "&display=Y";
 
-        $template    = getTemplateById($url);
+        $template = get_template_by_id($url);
 
-        $collected  = $template->collected;
-        $percentage  =   0;
+        $collected = (isset($template->collected)) ? $template->collected : 0;
+        $percentage = 0;
 
-        $percentage =  ($startingAmount  + (int)$collected) * 100 /    $objectiveCollection;
+        $percentage = (($startingAmount + (int)$collected) * 100) / $objectiveCollection;
 
         $percentage = (int)$percentage;
 
@@ -145,15 +151,22 @@ function capitaine_shortcode_first_name($atts)
 
 add_shortcode('givexpert', 'capitaine_shortcode_first_name');
 
-function getTemplateById($url)
-{    
-    $output = file_get_contents($url);
-    
-    $output_json = json_decode($output, true);
+function get_template_by_id($url) {
+    $args = array(
+        'Content-Type' => 'application/json'
+    );
+    $get_data = wp_remote_get($url, $args);
+    $api_content_data = $get_data['body'];
 
+    $data_json = (isset($api_content_data)) ? json_decode($api_content_data, true) : [];
+        
     $template_array = [];
-    for ($i=0; $i < count($output_json['templates']) ; $i++) { 
-        $template = $output_json['templates'][$i];
+    if(!isset($data_json['templates'])) {
+        return [];
+    }
+
+    for ($i=0; $i < count($data_json['templates']) ; $i++) { 
+        $template = $data_json['templates'][$i];
         $template_object = new stdClass();
         $template_object->id = $template['id'];
         $template_object->name = $template['name'];
@@ -169,8 +182,6 @@ function getTemplateById($url)
         $template_array[] = $template_object;
     }
 
-    $template =  $template_array[0];
-
-    return $template;
+    return (count($template_array) > 0) ? $template_array[0] : $template_array;
 }
 ?>
