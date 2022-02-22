@@ -44,7 +44,7 @@ function capitaine_shortcode_first_name($atts)
         $collected = (isset($template->collected)) ? $template->collected : 0;
         $percentage = 0;
 
-        $percentage = (($startingAmount + (int)$collected) * 100) / $objectiveCollection;
+        $percentage = ($objectiveCollection != 0) ? (($startingAmount + (int)$collected) * 100) / $objectiveCollection : 0;
 
         $percentage = (int)$percentage;
 
