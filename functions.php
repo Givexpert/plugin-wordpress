@@ -293,12 +293,17 @@ function ajax_progress_bar_save_code()
     unset($_POST['action']);
 
     $uniqid= uniqid();
-    $old_code =  $_POST['oldCode'];
-    $code_block =  $_POST['codeBlock']; 
+    $old_code =  isset($_POST['oldCode']);
+    $old_code = stripslashes($old_code);
+    $old_code = htmlspecialchars($old_code);
+
+    $code_block =  isset($_POST['codeBlock']); 
+    $code_block = stripslashes($code_block);
+    $code_block = htmlspecialchars($code_block);
 
     $progressbar_table_name = $wpdb->prefix . "progressbar_data";
-    $exist_data = $wpdb->get_results("SELECT * FROM `$progressbar_table_name` where codeBlock =  '$old_code'  ");
-    $new_exist_data = $wpdb->get_results("SELECT * FROM `$progressbar_table_name` where codeBlock =  '$code_block'  ");
+    $exist_data =  $wpdb->get_results( $wpdb->prepare( "SELECT * FROM `$progressbar_table_name` WHERE codeBlock = %d", $old_code ) );
+    $new_exist_data =  $wpdb->get_results( $wpdb->prepare( "SELECT * FROM `$progressbar_table_name` WHERE codeBlock = %d", $code_block ) );
 
     if (count($exist_data) == 0 && count($new_exist_data) == 0 ) {
         
@@ -328,7 +333,9 @@ function ajax_save_progress_bar_data()
 {
     global $wpdb;
 
-    $code_block =  $_POST['codeBlock'];
+    $code_block =  isset($_POST['codeBlock']);
+    $code_block = stripslashes($code_block);
+    $code_block = htmlspecialchars($code_block);
 
     unset($_POST['action']);
     unset($_POST['codeBlock']);

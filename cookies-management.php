@@ -2,14 +2,13 @@
 function give_xpert_cookies_management()
 {
 
-    $utm_medium  =  isset($_GET['utm_medium']) ? $_GET['utm_medium'] :  null;
-    $utm_source  =  isset($_GET['utm_source']) ? $_GET['utm_source'] : null;
-    $utm_campaign  =  isset($_GET['utm_campaign']) ? $_GET['utm_campaign'] :  null;
-    $utm_content  =  isset($_GET['utm_content']) ? $_GET['utm_content'] :  null;
-    $utm_term  =  isset($_GET['utm_term']) ? $_GET['utm_term'] : null;
-    $mediaCode  =  isset($_GET['mediaCode']) ? $_GET['mediaCode'] :  null;
-    $externalId  =  isset($_GET['externalId']) ? $_GET['externalId'] : null;
-
+    $utm_medium  =  isset($_GET['utm_medium']) ? htmlspecialchars(stripslashes($_GET['utm_medium'])) : null;
+    $utm_source  =  isset($_GET['utm_source']) ? htmlspecialchars(stripslashes($_GET['utm_source'])) : null;
+    $utm_campaign  =  isset($_GET['utm_campaign']) ? htmlspecialchars(stripslashes($_GET['utm_campaign'])) : null;
+    $utm_content  =  isset($_GET['utm_content']) ? htmlspecialchars(stripslashes($_GET['utm_content'])) : null;
+    $utm_term  =  isset($_GET['utm_term']) ? htmlspecialchars(stripslashes($_GET['utm_term'])) : null;
+    $mediaCode  =  isset($_GET['mediaCode']) ? htmlspecialchars(stripslashes($_GET['mediaCode'])) : null;
+    $externalId  =  isset($_GET['externalId']) ? htmlspecialchars(stripslashes($_GET['externalId'])) : null;
 
     update_cookies_data('give_xpert_utm_medium', $utm_medium);
     update_cookies_data('give_xpert_utm_source', $utm_source);

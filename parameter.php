@@ -124,10 +124,10 @@ function parametre_sub_menu_html()
 						</div>
 
 						<div class="mb-3">
-							<label class="text-black" for="">Domaine : <?php echo $user_config_data->domaine ?></label>
+							<label class="text-black" for="">Domaine : <?php echo esc_attr($user_config_data->domaine) ?></label>
 						</div>
 						<div class="mb-3">
-							<label class="text-black" for="">Identifiant : <?php echo $user_config_data->identifiant ?></label>
+							<label class="text-black" for="">Identifiant : <?php echo esc_attr( $user_config_data->identifiant) ?></label>
 						</div>
 						<div class="mb-3">
 							<label class="text-black" for="">Mot de passe : ************</label>

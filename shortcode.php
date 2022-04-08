@@ -1,14 +1,6 @@
 <?php
-/**
- * Plugin Name: Very First Plugin
- * Plugin URI: https://www.yourwebsiteurl.com/
- * Description: This is the very first plugin I ever created.
- * Version: 1.0
- * Author: Your Name Here
- * Author URI: http://yourwebsiteurl.com/
- **/
 
-function capitaine_shortcode_first_name($atts)
+function givexpert_capitaine_shortcode_first_name($atts)
 {
     global $wpdb;
 
@@ -39,7 +31,7 @@ function capitaine_shortcode_first_name($atts)
         }
         $url = $domaine. "?user=" . $client_data->identifiant . "&key=" . $client_data->password . "&id=" . $idFormulaire . "&display=Y";
 
-        $template = get_template_by_id($url);
+        $template = givexpert_get_template_by_id($url);
 
         $collected = (isset($template->collected)) ? $template->collected : 0;
         $percentage = 0;
@@ -149,9 +141,9 @@ function capitaine_shortcode_first_name($atts)
     }
 }
 
-add_shortcode('givexpert', 'capitaine_shortcode_first_name');
+add_shortcode('givexpert', 'givexpert_capitaine_shortcode_first_name');
 
-function get_template_by_id($url) {
+function givexpert_get_template_by_id($url) {
     $args = array(
         'Content-Type' => 'application/json'
     );

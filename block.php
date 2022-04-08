@@ -12,14 +12,13 @@ require_once(dirname(__FILE__) . '/functions.php');
 require_once(dirname(__FILE__) . '/shortcode.php');
 require_once(dirname(__FILE__) . '/cookies-management.php');
 
-register_activation_hook(__FILE__, 'create_client_data_table');
-//register_uninstall_hook(__FILE__, 'delete_plugin_database_table');
+register_activation_hook(__FILE__, 'givexpert_create_client_data_table');
 
 global $jal_db_version;
 $jal_db_version = '1.0';
 
 // Load assets for wp-admin when editor is active
-function gutenberg_givexpert_block_admin()
+function givexpert_gutenberg_block_admin()
 {
     wp_enqueue_script('jquery');
     wp_enqueue_script(
@@ -49,14 +48,8 @@ function gutenberg_givexpert_block_admin()
 }
 
 // Load assets for frontend
-function  gutenberg_givexpert_block_frontend()
+function  givexpert_gutenberg_block_frontend()
 {
-
-    // wp_enqueue_style(
-    //    'give-xpert-block',
-    //    plugins_url( 'css/block.css', __FILE__ ),
-    //    array()
-    // );
     wp_enqueue_script(
         'give-xpert-block-js',
         plugins_url('js/custom.js', __FILE__),
@@ -74,12 +67,12 @@ function  gutenberg_givexpert_block_frontend()
     ]);
 }
 
-add_action('enqueue_block_editor_assets', 'gutenberg_givexpert_block_admin');
+add_action('enqueue_block_editor_assets', 'givexpert_gutenberg_block_admin');
 
 add_action('wp_ajax_ajax_progress_bar_save_code', 'ajax_progress_bar_save_code');
 
 add_action('wp_ajax_ajax_save_progress_bar_data', 'ajax_save_progress_bar_data');
 
-add_action('wp_enqueue_scripts', 'gutenberg_givexpert_block_frontend');
+add_action('wp_enqueue_scripts', 'givexpert_gutenberg_block_frontend');
 
 ?>

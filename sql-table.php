@@ -4,7 +4,7 @@
  *
  * @return void
  */
-function create_client_data_table() {
+function givexpert_create_client_data_table() {
 	global $wpdb;
 	global $jal_db_version;
 		
@@ -43,7 +43,7 @@ function create_client_data_table() {
  *
  * @return void
  */
-function delete_plugin_database_table(){
+function givexpert_delete_plugin_database_table(){
   global $wpdb;
   global $jal_db_version;
 	
