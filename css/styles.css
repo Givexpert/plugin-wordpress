@@ -7976,6 +7976,7 @@ input[type="button"].btn-block {
   background-clip: border-box;
   border: 1px solid #c8ced3;
   border-radius: 0.25rem;
+  width: 300px;
 }
 
 .card > hr {
@@ -13945,6 +13946,9 @@ a.text-dark:hover, a.text-dark:focus {
 .text-body {
   color: #c2c2c2 !important;
 }
+.width-300{
+  width: 300px !important;
+};
 
 .text-muted, .preview-list .preview-item .preview-item-content p .content-category, .settings-panel .nav-tabs .nav-item .nav-link, .list-wrapper .remove, .email-wrapper .mail-sidebar .menu-bar .profile-list-item a .user .u-designation, .email-wrapper .mail-list-container .mail-list .content .message_text, .email-wrapper .mail-list-container .mail-list .details .date, .avgrund-popin, .datepicker.datepicker-dropdown .datepicker-days table.table-condensed thead tr th.datepicker-switch, .datepicker.datepicker-inline .datepicker-days table.table-condensed thead tr th.datepicker-switch {
   color: rgba(118, 118, 118, 0.7) !important;

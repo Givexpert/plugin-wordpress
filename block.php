@@ -29,7 +29,11 @@ function givexpert_gutenberg_block_admin()
 
     wp_localize_script("give-xpert-block", 'GiveXpertBlockParams', [
         "logo_link" =>  plugins_url('images/logo_GiveXpert.png', __FILE__),
-        'user_templates_data' => get_user_template_datas(),
+        "logo_test" =>  plugins_url('images/img1.jpg', __FILE__),
+        'template_datas' => givexpert_get_template_datas(),
+        'template_peer_datas' => givexpert_get_template_peer_datas(),
+        'template_collectors_datas' => givexpert_get_template_collectors_datas(),
+        'connexion_datas' => givexpert_get_connexion_data(),
         'utm_values' => create_utm_parameter_for_url(),
         'ajaxurl'   => admin_url('admin-ajax.php'),
     ]);
@@ -69,9 +73,9 @@ function  givexpert_gutenberg_block_frontend()
 
 add_action('enqueue_block_editor_assets', 'givexpert_gutenberg_block_admin');
 
-add_action('wp_ajax_ajax_progress_bar_save_code', 'ajax_progress_bar_save_code');
+add_action('wp_ajax_givexpert_ajax_progress_bar_save_code', 'givexpert_ajax_progress_bar_save_code');
 
-add_action('wp_ajax_ajax_save_progress_bar_data', 'ajax_save_progress_bar_data');
+add_action('wp_ajax_givexpert_ajax_save_progress_bar_data', 'givexpert_ajax_save_progress_bar_data');
 
 add_action('wp_enqueue_scripts', 'givexpert_gutenberg_block_frontend');
 

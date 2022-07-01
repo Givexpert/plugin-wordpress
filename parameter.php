@@ -28,20 +28,20 @@ function givexpert_plugin_page()
 	$icon = 'dashicons-schedule';
 	$position = 60;
 
-	add_menu_page($page_title, $menu_title, "manage_options", $slug, "main_menu");
-	add_submenu_page($slug, "Parametre", "Configuration", 'administrator', 'parametre', "parametre_sub_menu_html");
-	add_submenu_page($slug, "Shortcode", "Shortcode", 'administrator', 'shortcode', "shortcode_sub_menu_html");
+	add_menu_page($page_title, $menu_title, "manage_options", $slug, "givexpert_main_menu");
+	add_submenu_page($slug, "Parametre", "Configuration", 'administrator', 'parametre', "givexpert_parametre_sub_menu_html");
+	add_submenu_page($slug, "Shortcode", "Shortcode", 'administrator', 'shortcode', "givexpert_shortcode_sub_menu_html");
 	unset($GLOBALS['submenu'][$slug][0]);
 }
 
 // function  menu
-function main_menu()
+function givexpert_main_menu()
 {
 	echo 'GiveXpert Plugin';
 }
 
 
-function parametre_sub_menu_html()
+function givexpert_parametre_sub_menu_html()
 {
 	wp_enqueue_style('giveXpert-style', plugins_url('css/styles.css', __FILE__));
 	wp_enqueue_style('giveXpert-parameter-style', plugins_url('css/parameter.css', __FILE__));
@@ -62,9 +62,23 @@ function parametre_sub_menu_html()
 
 		$wpdb->query("TRUNCATE TABLE `$table_name`");
 
-		$wpdb->insert($table_name, array('identifiant' => $_POST['identifiant'], 'domaine' => $_POST['domaine'], 'password' => $_POST['password']));
+		$identifiant = isset($_POST['identifiant']) ? base64_encode(sanitize_text_field($_POST['identifiant'])) : null;
+		$domaine = isset($_POST['domaine']) ? base64_encode(sanitize_text_field($_POST['domaine'])) : null;
+		$password = isset($_POST['password']) ? base64_encode(sanitize_text_field($_POST['password'])) : null;
 
-		wp_redirect(admin_url('admin.php?page=parametre'));
+		if($identifiant != null && $domaine != null && $password != null) {
+			$wpdb->query(
+				$wpdb->prepare(
+						"INSERT INTO $table_name
+						( identifiant, domaine, password )
+						VALUES ( %s, %s, %s )",
+						$identifiant,
+						$domaine,
+						$password
+				)
+			);
+			wp_redirect(admin_url('admin.php?page=parametre'));
+		}
 	}elseif(isset($_POST['submit'])){
 		$wpdb->query("TRUNCATE TABLE `$table_name`");
 		wp_redirect(admin_url('admin.php?page=parametre'));
@@ -124,10 +138,10 @@ function parametre_sub_menu_html()
 						</div>
 
 						<div class="mb-3">
-							<label class="text-black" for="">Domaine : <?php echo esc_attr($user_config_data->domaine) ?></label>
+							<label class="text-black" for="">Domaine : <?php echo esc_attr(base64_decode($user_config_data->domaine)) ?></label>
 						</div>
 						<div class="mb-3">
-							<label class="text-black" for="">Identifiant : <?php echo esc_attr( $user_config_data->identifiant) ?></label>
+							<label class="text-black" for="">Identifiant : <?php echo esc_attr(base64_decode( $user_config_data->identifiant)) ?></label>
 						</div>
 						<div class="mb-3">
 							<label class="text-black" for="">Mot de passe : ************</label>
@@ -165,7 +179,7 @@ function parametre_sub_menu_html()
 	}
 }
 
-function shortcode_sub_menu_html()
+function givexpert_shortcode_sub_menu_html()
 {
 	wp_enqueue_style('giveXpert-style', plugins_url('css/styles.css', __FILE__));
 	wp_enqueue_style('giveXpert-parameter-style', plugins_url('css/parameter.css', __FILE__));

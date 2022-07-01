@@ -3,7 +3,7 @@ var array1 = ['a', "b", "v"];
 
 var selectOption = `<option value="#">Selectionnez un formulaire</option>`;
 var policeOption = "";
-var userTemplates = GiveXpertBlockParams.user_templates_data;
+var userTemplates = GiveXpertBlockParams.template_datas;
 var logoLink = GiveXpertBlockParams.logo_link;
 var utmValues = GiveXpertBlockParams.utm_values;
 

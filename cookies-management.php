@@ -1,5 +1,5 @@
 <?php
-function give_xpert_cookies_management()
+function givexpert_cookies_management()
 {
 
     $utm_medium  =  isset($_GET['utm_medium']) ? htmlspecialchars(stripslashes($_GET['utm_medium'])) : null;
@@ -10,13 +10,13 @@ function give_xpert_cookies_management()
     $mediaCode  =  isset($_GET['mediaCode']) ? htmlspecialchars(stripslashes($_GET['mediaCode'])) : null;
     $externalId  =  isset($_GET['externalId']) ? htmlspecialchars(stripslashes($_GET['externalId'])) : null;
 
-    update_cookies_data('give_xpert_utm_medium', $utm_medium);
-    update_cookies_data('give_xpert_utm_source', $utm_source);
-    update_cookies_data('give_xpert_utm_campaign', $utm_campaign);
-    update_cookies_data('give_xpert_utm_content', $utm_content);
-    update_cookies_data('give_xpert_utm_term', $utm_term);
-    update_cookies_data('give_xpert_mediaCode', $mediaCode);
-    update_cookies_data('give_xpert_externalId', $externalId);
+    update_cookies_data('givexpert_utm_medium', $utm_medium);
+    update_cookies_data('givexpert_utm_source', $utm_source);
+    update_cookies_data('givexpert_utm_campaign', $utm_campaign);
+    update_cookies_data('givexpert_utm_content', $utm_content);
+    update_cookies_data('givexpert_utm_term', $utm_term);
+    update_cookies_data('givexpert_mediaCode', $mediaCode);
+    update_cookies_data('givexpert_externalId', $externalId);
     
     function  create_utm_parameter_for_url()
     {
@@ -34,12 +34,12 @@ function give_xpert_cookies_management()
         $i = 0;
         $query_params = "?"; 
         foreach ($utm_keys as $key => $utm_key) {
-            if (isset($_COOKIE["give_xpert_".$utm_key])) {
-
+            $cookies = isset($_COOKIE["givexpert_".$utm_key]) ? sanitize_text_field($_COOKIE["givexpert_".$utm_key]) : null;
+            if ($cookies != null) {
                 if (++$i === $numItems) {
-                    $query_params .= $utm_key . "=" . $_COOKIE["give_xpert_".$utm_key];
+                    $query_params .= $utm_key . "=" . $cookies;
                 } else {
-                    $query_params .= $utm_key . "=" . $_COOKIE["give_xpert_".$utm_key] . "&";
+                    $query_params .= $utm_key . "=" . $cookies . "&";
                 }
             }
         }
@@ -79,16 +79,10 @@ function slim_get_values_concat($values){
  */
 function  update_cookies_data($cookie_name, $new_cookies_value)
 {
-
-    if (!isset($_COOKIE[$cookie_name])) {
-        if ($new_cookies_value != "null") {
-            setcookie($cookie_name, $new_cookies_value, time() + 1200);
-        }
-    } else {
-        // unset($_COOKIE[$cookie_name]);
+    if ($new_cookies_value != "null") {
         setcookie($cookie_name, $new_cookies_value, time() + 1200);
     }
 }
 
-add_action('init', 'give_xpert_cookies_management');
+add_action('init', 'givexpert_cookies_management');
 ?>
